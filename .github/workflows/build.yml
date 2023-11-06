@@ -51,8 +51,7 @@ jobs:
           working-directory: linux-${{ env.KERNEL_ML_VER }}
           run: |
             cp ../config .config
-            scripts/config --set-str LOCALVERSION "-bbr3"
-            scripts/config -e LOCALVERSION_AUTO
+            scripts/config --set-str LOCALVERSION "-l4t-bbr3"
             # BBR3
             scripts/config -m TCP_CONG_CUBIC \
               -d DEFAULT_CUBIC \
@@ -159,11 +158,9 @@ jobs:
             KDEB_COMPRESS: "xz"
             KCFLAGS: "-O3"
           run: |
-            make \
-              CC="gcc-13" \
-              olddefconfig
             # Build deb
             make \
+              LOCALVERSION="" \
               CC="gcc-13" \
               -j`nproc` \
               bindeb-pkg
@@ -171,6 +168,7 @@ jobs:
             rm .version
             # Build rpm
             make \
+              LOCALVERSION="" \
               CC="gcc-13" \
               RPMOPTS="--nodeps" \
               -j`nproc` \
