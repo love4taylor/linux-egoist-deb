@@ -45,18 +45,12 @@ jobs:
              && git commit -m "Applied bbr3.patch"
            curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/misc/0001-lrng.patch | git apply -v --index \
              && git commit -m "Applied lrng.patch"
-           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/misc/gcc-lto/0001-gcc-lto.patch | git apply -v --index \
-             && git commit -m "Applied gcc-lto.patch"
-           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/misc/gcc-lto/0002-gcc-lto-no-pie.patch | git apply -v --index \
-             && git commit -m "Applied gcc-lto-no-pie.patch"
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
             cp ../config.stable .config
             scripts/config --set-str LOCALVERSION "-l4t-bbr3"
-            # Enable GCC LTO
-            scripts/config -e LTO_GCC
             # BBR3
             scripts/config -m TCP_CONG_CUBIC \
               -d DEFAULT_CUBIC \
