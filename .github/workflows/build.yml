@@ -27,8 +27,6 @@ jobs:
             ref: ${{ env.KERNEL_ML_VER }}
             path: linux-${{ env.KERNEL_ML_VER }}
 
-        - uses: fregante/setup-git-user@v2
-
         - name: Setup dependencies
           run: |
             sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -42,6 +40,8 @@ jobs:
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_ML_VER }}
           run: |
+           git config user.name "GitHub Actions"
+           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
            curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/0003-bbr3.patch | git apply -v --index \
              && git commit -m "Applied bbr3.patch"
            curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/misc/0001-lrng.patch | git apply -v --index \
