@@ -1,4 +1,4 @@
-name: Build Package
+name: Build mainline Kernel Package
 
 on:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_ML_VER }}
           run: |
-            cp ../config .config
+            cp ../config.mainline .config
             scripts/config --set-str LOCALVERSION "-l4t-bbr3"
             # BBR3
             scripts/config -m TCP_CONG_CUBIC \
