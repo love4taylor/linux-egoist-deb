@@ -178,13 +178,13 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: rpm
-            path: ./linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/*.rpm
+            path: /home/runner/rpmbuild/RPMS/x86_64/*.rpm
 
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: "linux-*.deb,./linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/*.rpm"
+            artifacts: "linux-*.deb,/home/runner/rpmbuild/RPMS/x86_64/*.rpm"
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: ${{ env.KERNEL_STABLE_VER }}
