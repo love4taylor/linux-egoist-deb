@@ -172,7 +172,10 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: deb
-            path: linux-*-${{ env.KERNEL_STABLE_VER }}-*.deb
+            path: |
+              linux-image-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-headers-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-libc-dev_{{ env.KERNEL_STABLE_VER }}*.deb
         
         - name: Upload rpm
           uses: actions/upload-artifact@v3
@@ -184,7 +187,7 @@ jobs:
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: "linux-*-${{ env.KERNEL_STABLE_VER }}-*.deb,/home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm"
+            artifacts: "linux-image-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb,linux-headers-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb,linux-libc-dev_{{ env.KERNEL_STABLE_VER }}*.deb,/home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm"
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
