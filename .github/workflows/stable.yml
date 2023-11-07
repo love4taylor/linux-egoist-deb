@@ -13,16 +13,16 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: v6.5.10
+  KERNEL_STABLE_VER: 6.5.10
 
 jobs:
     build:
       runs-on: self-hosted
       steps:
         - uses: actions/checkout@v4
-        - name: Checkout Kernel ${{ env.KERNEL_STABLE_VER }}
+        - name: Checkout Linux Kernel ${{ env.KERNEL_STABLE_VER }}
           run: |
-            git clone --depth 1 --branch ${{ env.KERNEL_STABLE_VER }} https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${{ env.KERNEL_STABLE_VER }}
+            git clone --depth 1 --branch v${{ env.KERNEL_STABLE_VER }} https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${{ env.KERNEL_STABLE_VER }}
 
         - name: Setup dependencies
           run: |
@@ -172,19 +172,19 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: deb
-            path: linux-*.deb
+            path: linux-*-${{ env.KERNEL_STABLE_VER }}-*.deb
         
         - name: Upload rpm
           uses: actions/upload-artifact@v3
           with:
             name: rpm
-            path: /home/runner/rpmbuild/RPMS/x86_64/*.rpm
+            path: /home/runner/rpmbuild/RPMS/x86_64/kernel-*-${{ env.KERNEL_STABLE_VER }}_*.rpm
 
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: "linux-*.deb,/home/runner/rpmbuild/RPMS/x86_64/*.rpm"
+            artifacts: "linux-*-${{ env.KERNEL_STABLE_VER }}-*.deb,/home/runner/rpmbuild/RPMS/x86_64/kernel-*-${{ env.KERNEL_STABLE_VER }}_*.rpm"
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
-            tag: ${{ env.KERNEL_STABLE_VER }}
+            tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
