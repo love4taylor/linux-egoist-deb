@@ -32,7 +32,7 @@ jobs:
               libelf-dev libssl-dev dwarves bison \
               gawk openssl libssl-dev dkms libudev-dev \
               libpci-dev libiberty-dev autoconf \
-              gcc-13 rpm debhelper lz4
+              gcc-13 rpm debhelper lz4 ccache
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -139,17 +139,18 @@ jobs:
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           env:
+            KBUILD_BUILD_TIMESTAMP: ''
             KDEB_COMPRESS: "xz"
             KCFLAGS: "-O3"
           run: |
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               olddefconfig
             # Build deb
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               -j`nproc` \
               bindeb-pkg
             # reset version
@@ -157,7 +158,7 @@ jobs:
             # Build rpm
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               RPMOPTS="--nodeps" \
               -j`nproc` \
               rpm-pkg
@@ -173,9 +174,9 @@ jobs:
           with:
             name: deb
             path: |
-              linux-image-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-headers-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-libc-dev_{{ env.KERNEL_STABLE_VER }}*.deb
+              linux-image-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-headers-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-libc-dev_${{ env.KERNEL_STABLE_VER }}*.deb
         
         - name: Upload rpm
           uses: actions/upload-artifact@v3
@@ -187,7 +188,11 @@ jobs:
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: "linux-image-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb,linux-headers-{{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb,linux-libc-dev_{{ env.KERNEL_STABLE_VER }}*.deb,/home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm"
+            artifacts: |
+              linux-image-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-headers-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
+              linux-libc-dev_${{ env.KERNEL_STABLE_VER }}*.deb
+              /home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
