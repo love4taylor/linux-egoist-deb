@@ -188,3 +188,7 @@ jobs:
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
+
+        - name: Remove the rpmbuild directory outside the working directory
+          if: ${{ always() }}
+          run: rm -rf /home/runner/rpmbuild
