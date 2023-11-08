@@ -26,13 +26,12 @@ jobs:
 
         - name: Setup dependencies
           run: |
-            sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
             sudo apt-get install -y build-essential \
-              bc kmod cpio flex libncurses5-dev \
+              bc kmod cpio flex libncurses-dev \
               libelf-dev libssl-dev dwarves bison \
               gawk openssl libssl-dev dkms libudev-dev \
               libpci-dev libiberty-dev autoconf \
-              gcc-13 rpm debhelper lz4 ccache
+              rpm debhelper lz4 ccache
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -135,6 +134,23 @@ jobs:
               -e LRNG_SELFTEST \
               -d LRNG_SELFTEST_PANIC \
               -d LRNG_RUNTIME_FORCE_SEEDING_DISABLE
+            # Disable DEBUG
+            scripts/config -d DEBUG_INFO \
+              -d DEBUG_INFO_BTF \
+              -d DEBUG_INFO_DWARF4 \
+              -d DEBUG_INFO_DWARF5 \
+              -d PAHOLE_HAS_SPLIT_BTF \
+              -d DEBUG_INFO_BTF_MODULES \
+              -d SLUB_DEBUG \
+              -d PM_DEBUG \
+              -d PM_ADVANCED_DEBUG \
+              -d PM_SLEEP_DEBUG \
+              -d ACPI_DEBUG \
+              -d SCHED_DEBUG \
+              -d LATENCYTOP \
+              -d DEBUG_PREEMPT \
+              -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
+              -e DEBUG_INFO_NONE
 
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -145,12 +161,12 @@ jobs:
           run: |
             make \
               LOCALVERSION="" \
-              CC="ccache gcc-13" \
+              CC="ccache gcc" \
               olddefconfig
             # Build deb
             make \
               LOCALVERSION="" \
-              CC="ccache gcc-13" \
+              CC="ccache gcc" \
               -j`nproc` \
               bindeb-pkg
             # reset version
@@ -158,7 +174,7 @@ jobs:
             # Build rpm
             make \
               LOCALVERSION="" \
-              CC="ccache gcc-13" \
+              CC="ccache gcc" \
               RPMOPTS="--nodeps" \
               -j`nproc` \
               rpm-pkg
