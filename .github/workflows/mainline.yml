@@ -13,18 +13,18 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_ML_VER: v6.6
+  KERNEL_ML_VER: 6.6
 
 jobs:
     build:
       runs-on: self-hosted
       steps:
         - uses: actions/checkout@v4
-        - name: Checkout Kernel ${{ env.KERNEL_ML_VER }}
+        - name: Checkout Linux Kernel ${{ env.KERNEL_ML_VER }}
           uses: actions/checkout@v4
           with:
             repository: torvalds/linux
-            ref: ${{ env.KERNEL_ML_VER }}
+            ref: v${{ env.KERNEL_ML_VER }}
             path: linux-${{ env.KERNEL_ML_VER }}
 
         - name: Setup dependencies
@@ -35,7 +35,7 @@ jobs:
               libelf-dev libssl-dev dwarves bison \
               gawk openssl libssl-dev dkms libudev-dev \
               libpci-dev libiberty-dev autoconf \
-              gcc-13 rpm debhelper lz4
+              gcc-13 rpm debhelper lz4 ccache
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_ML_VER }}
@@ -142,17 +142,18 @@ jobs:
         - name: Build
           working-directory: linux-${{ env.KERNEL_ML_VER }}
           env:
+            KBUILD_BUILD_TIMESTAMP: ''
             KDEB_COMPRESS: "xz"
             KCFLAGS: "-O3"
           run: |
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               olddefconfig
             # Build deb
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               -j`nproc` \
               bindeb-pkg
             # reset version
@@ -160,7 +161,7 @@ jobs:
             # Build rpm
             make \
               LOCALVERSION="" \
-              CC="gcc-13" \
+              CC="ccache gcc-13" \
               RPMOPTS="--nodeps" \
               -j`nproc` \
               rpm-pkg
@@ -175,19 +176,26 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: deb
-            path: linux-*.deb
-        
+            path: |
+              linux-image-${{ env.KERNEL_ML_VER }}.0-l4t-bbr3_*.deb
+              linux-headers-${{ env.KERNEL_ML_VER }}.0-l4t-bbr3_*.deb
+              linux-libc-dev_${{ env.KERNEL_ML_VER }}.0*.deb
+ 
         - name: Upload rpm
           uses: actions/upload-artifact@v3
           with:
             name: rpm
-            path: /home/runner/rpmbuild/RPMS/x86_64/*.rpm
+            path: linux-${{ env.KERNEL_ML_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_ML_VER }}.0_*.rpm
 
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: "linux-*.deb,/home/runner/rpmbuild/RPMS/x86_64/*.rpm"
+            artifacts: |
+              linux-image-${{ env.KERNEL_ML_VER }}.0-l4t-bbr3_*.deb
+              linux-headers-${{ env.KERNEL_ML_VER }}.0-l4t-bbr3_*.deb
+              linux-libc-dev_${{ env.KERNEL_ML_VER }}.0*.deb
+              linux-${{ env.KERNEL_ML_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_ML_VER }}.0_*.rpm
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
-            tag: ${{ env.KERNEL_ML_VER }}
+            tag: v${{ env.KERNEL_ML_VER }}-l4t-bbr3
