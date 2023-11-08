@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.5.10
+  KERNEL_STABLE_VER: 6.6.1
 
 jobs:
     build:
@@ -39,11 +39,11 @@ jobs:
           run: |
            git config user.name "GitHub Actions"
            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/0002-amd-pref-core.patch | git apply -v --index \
+           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/0002-amd-pref-core.patch | git apply -v --index \
              && git commit -m "Applied amd-pref-core.patch"
-           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/0003-bbr3.patch | git apply -v --index \
+           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/0003-bbr3.patch | git apply -v --index \
              && git commit -m "Applied bbr3.patch"
-           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.5/misc/0001-lrng.patch | git apply -v --index \
+           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/misc/0001-lrng.patch | git apply -v --index \
              && git commit -m "Applied lrng.patch"
 
         - name: Copy .config and setup some config
@@ -182,7 +182,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: rpm
-            path: /home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
+            path: linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
 
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
@@ -192,11 +192,8 @@ jobs:
               linux-image-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
               linux-headers-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
               linux-libc-dev_${{ env.KERNEL_STABLE_VER }}*.deb
-              /home/runner/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
+              linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
 
-        - name: Remove the rpmbuild directory outside the working directory
-          if: ${{ always() }}
-          run: rm -rf /home/runner/rpmbuild
