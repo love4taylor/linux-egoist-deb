@@ -157,7 +157,6 @@ jobs:
           env:
             KBUILD_BUILD_TIMESTAMP: ''
             KDEB_COMPRESS: "xz"
-            KCFLAGS: "-O3"
           run: |
             make \
               LOCALVERSION="" \
