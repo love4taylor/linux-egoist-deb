@@ -33,11 +33,6 @@ jobs:
               libpci-dev libiberty-dev autoconf \
               rpm debhelper lz4 ccache
 
-        - name: Install LLVM and Clang
-          uses: KyleMayes/install-llvm-action@v1
-          with:
-            version: 17
-
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
@@ -55,15 +50,6 @@ jobs:
           run: |
             cp ../config.stable .config
             scripts/config --set-str LOCALVERSION "-l4t-bbr3"
-            # Clang Thin-LTO
-            scripts/config -d LTO_NONE \
-              -e LTO \
-              -e LTO_CLANG \
-              -e ARCH_SUPPORTS_LTO_CLANG \
-              -e ARCH_SUPPORTS_LTO_CLANG_THIN \
-              -e HAS_LTO_CLANG \
-              -e LTO_CLANG_THIN \
-              -e HAVE_GCC_PLUGINS
             # BBR3
             scripts/config -m TCP_CONG_CUBIC \
               -d DEFAULT_CUBIC \
@@ -171,23 +157,16 @@ jobs:
           env:
             KBUILD_BUILD_TIMESTAMP: ''
             KDEB_COMPRESS: "xz"
+            KCFLAGS: "-O3"
           run: |
             make \
               LOCALVERSION="" \
-              LLVM=1 \
-              LLVM_IAS=1 \
-              CC="ccache clang" \
-              CXX="ccache clang++" \
-              LD="ld.lld" \
+              CC="ccache gcc" \
               olddefconfig
             # Build deb
             make \
               LOCALVERSION="" \
-              LLVM=1 \
-              LLVM_IAS=1 \
-              CC="ccache clang" \
-              CXX="ccache clang++" \
-              LD="ld.lld" \
+              CC="ccache gcc" \
               -j`nproc` \
               bindeb-pkg
             # reset version
@@ -195,11 +174,7 @@ jobs:
             # Build rpm
             make \
               LOCALVERSION="" \
-              LLVM=1 \
-              LLVM_IAS=1 \
-              CC="ccache clang" \
-              CXX="ccache clang++" \
-              LD="ld.lld" \
+              CC="ccache gcc" \
               RPMOPTS="--nodeps" \
               -j`nproc` \
               rpm-pkg
