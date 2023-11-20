@@ -22,7 +22,7 @@ jobs:
         - uses: actions/checkout@v4
         - name: Checkout Linux Kernel ${{ env.KERNEL_STABLE_VER }}
           run: |
-            git clone --depth 1 --branch v${{ env.KERNEL_STABLE_VER }} https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git linux-${{ env.KERNEL_STABLE_VER }}
+            git clone --depth 1 --branch v${{ env.KERNEL_STABLE_VER }} https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux linux-${{ env.KERNEL_STABLE_VER }}
 
         - name: Setup dependencies
           run: |
