@@ -42,6 +42,8 @@ jobs:
              && git commit -m "Applied amd-pref-core.patch"
            curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/0003-bbr3.patch | git apply -v --index \
              && git commit -m "Applied bbr3.patch"
+           curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/0007-zstd.patch | git apply -v --index \
+             && git commit -m "Applied zstd.patch"
            curl -sSL https://raw.githubusercontent.com/CachyOS/kernel-patches/master/6.6/misc/0001-lrng.patch | git apply -v --index \
              && git commit -m "Applied lrng.patch"
 
