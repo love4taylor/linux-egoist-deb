@@ -49,6 +49,7 @@ jobs:
                     patch -Np1 -i "../clear-patches/${i}"
                     git commit -am "[PATCH]: clearlinux-pkgs/linux/${i}"
                 done
+            curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1 && git commit -am "net-tcp_brutal: make it as a built-in kernel module"
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -71,6 +72,8 @@ jobs:
               -d DEFAULT_FQ_CODEL \
               -e DEFAULT_FQ \
               --set-str DEFAULT_NET_SCH fq
+            # TCP Brutal
+            scripts/config -m TCP_CONG_BRUTAL
             # MGLRU
             scripts/config -e LRU_GEN -e LRU_GEN_ENABLED -d LRU_GEN_STATS
             # Disable DEBUG
