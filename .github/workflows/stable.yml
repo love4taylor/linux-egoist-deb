@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.6.4
+  KERNEL_STABLE_VER: 6.6.5
 
 jobs:
     build:
@@ -26,12 +26,13 @@ jobs:
 
         - name: Setup dependencies
           run: |
-            sudo apt-get install -y build-essential \
-              bc kmod cpio flex libncurses-dev \
-              libelf-dev libssl-dev dwarves bison \
-              gawk openssl libssl-dev dkms libudev-dev \
-              libpci-dev libiberty-dev autoconf \
-              rpm debhelper lz4 ccache
+            sudo apt-get update \
+            && sudo apt-get install -y build-essential \
+                 bc kmod cpio flex libncurses-dev \
+                 libelf-dev libssl-dev dwarves bison \
+                 gawk openssl libssl-dev dkms libudev-dev \
+                 libpci-dev libiberty-dev autoconf \
+                 rpm debhelper lz4 ccache
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
