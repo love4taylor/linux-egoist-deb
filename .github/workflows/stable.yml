@@ -51,6 +51,9 @@ jobs:
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
                   grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
+                    if [ "${i}" == "0162-extra-optmization-flags.patch" ] ; then
+                      continue
+                    fi
                     echo "Applying patch ${i}..."
                     patch -Np1 -i "../clear-patches/${i}"
                     git commit -am "[PATCH]: clearlinux-pkgs/linux/${i}"
