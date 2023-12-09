@@ -2,6 +2,21 @@
 
 Based on the Debian Cloud Kernel configuration file
 
+## Installation
+
+```shell
+# You need to install wget and jq first.
+wget $(curl -s https://api.github.com/repos/love4taylor/bbr3-kernel-pkg/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | .browser_download_url')
+dpkg -i linux-headers-*.deb
+dpkg -i linux-image-*.deb
+dpkg -i linux-libc-dev_*.dev #optional
+# Then reboot
+```
+
+## Dependencies
+
+- Clang & LLVM (Because of LTO, which is required when you compile modules with DKMS.)
+
 ## Patchs
 
 - [Netfilter nf_tables FullCone](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/netfilter/0001-netfilter-Add-netfilter-nf_tables-fullcone-support.patch?ref_type=heads)
