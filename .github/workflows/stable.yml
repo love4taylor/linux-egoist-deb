@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.6.5
+  KERNEL_STABLE_VER: 6.6.6
 
 jobs:
     build:
