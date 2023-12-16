@@ -5,7 +5,7 @@ Based on the Debian Cloud Kernel configuration file
 ## Installation
 
 ```shell
-# You need to install wget and jq first.
+# You need to install curl, wget and jq first.
 wget $(curl -s https://api.github.com/repos/love4taylor/bbr3-kernel-pkg/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | .browser_download_url')
 dpkg -i linux-headers-*.deb
 dpkg -i linux-image-*.deb
@@ -16,6 +16,14 @@ dpkg -i linux-libc-dev_*.dev #optional
 ## Dependencies
 
 - Clang & LLVM (Because of LTO, which is required when you compile modules with DKMS.)
+
+  ```
+  VERSION=17.0.6
+  curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${VERSION}-x86_64.tar.gz
+  sudo tar avxf llvm-${VERSION}-x86_64.tar.gz -C /opt/
+  # for BASH
+  echo "export PATH=\"/opt/llvm-${VERSION}/bin:\$PATH\"" | sudo tee -a ~/.bashrc
+  ```
 
 ## Patchs
 
