@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.6.7
+  KERNEL_STABLE_VER: 6.6.8
   LLVM_VER: 17.0.6
 
 jobs:
