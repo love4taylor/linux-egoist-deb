@@ -31,7 +31,7 @@ dpkg -i linux-libc-dev_*.dev #optional
 - [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
 - [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.6.y-xanmod/net/tcp/bbr3?ref_type=heads)
 - [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
-- [Clear Linux Patchs](https://github.com/clearlinux-pkgs/linux) (Exclude 0132, 0118, 0113, 0138, 0139)
+- [Clear Linux Patchs](https://github.com/clearlinux-pkgs/linux) (Exclude 0132, 0118, 0113, 0138, 0139, 0162: Clang not support)
 - [TCP Brutal](https://gist.github.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1)
 
 ## Notice
