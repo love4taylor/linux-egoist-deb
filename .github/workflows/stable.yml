@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.6.13
+  KERNEL_STABLE_VER: 6.7.3
   LLVM_VER: 17.0.6
 
 jobs:
@@ -46,9 +46,9 @@ jobs:
             git config user.name "GitHub Actions"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git clone https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
-              && git am ../xanmod-patches/linux-6.6.y-xanmod/net/netfilter/*.patch \
-              && git am ../xanmod-patches/linux-6.6.y-xanmod/net/tcp/bbr3/*.patch \
-              && git am ../xanmod-patches/linux-6.6.y-xanmod/net/tcp/cloudflare/*.patch
+              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
+              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
+              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
                   grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
