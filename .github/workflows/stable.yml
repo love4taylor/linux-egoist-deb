@@ -13,8 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.7.3
-  LLVM_VER: 17.0.6
+  KERNEL_STABLE_VER: 6.7.4
 
 jobs:
     build:
@@ -35,11 +34,6 @@ jobs:
                  libpci-dev libiberty-dev autoconf \
                  rpm debhelper lz4
 
-        - name: Install LLVM from kernel.org
-          run: |
-            curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${{ env.LLVM_VER }}-x86_64.tar.gz \
-             && tar avxf llvm-${{ env.LLVM_VER }}-x86_64.tar.gz
-
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
@@ -52,9 +46,6 @@ jobs:
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
                   grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
-                    if [ "${i}" == "0162-extra-optmization-flags.patch" ] ; then
-                      continue
-                    fi
                     echo "Applying patch ${i}..."
                     patch -Np1 -i "../clear-patches/${i}"
                     git commit -am "[PATCH]: clearlinux-pkgs/linux/${i}"
@@ -66,15 +57,6 @@ jobs:
           run: |
             cp ../config.stable .config
             scripts/config --set-str LOCALVERSION "-l4t-bbr3"
-            # Clang Thin-LTO
-            scripts/config -d LTO_NONE \
-              -e LTO \
-              -e LTO_CLANG \
-              -e ARCH_SUPPORTS_LTO_CLANG \
-              -e ARCH_SUPPORTS_LTO_CLANG_THIN \
-              -e HAS_LTO_CLANG \
-              -e LTO_CLANG_THIN \
-              -e HAVE_GCC_PLUGINS
             # FULLCONENAT
             scripts/config -e NFT_FULLCONE
             # xt_FLOWOFFLOAD
@@ -121,12 +103,10 @@ jobs:
           run: |
             make \
               LOCALVERSION="" \
-              LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
               olddefconfig
             # Build deb
             make \
               LOCALVERSION="" \
-              LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
               -j`nproc` \
               bindeb-pkg
             # reset version
@@ -134,7 +114,6 @@ jobs:
             # Build rpm
             make \
               LOCALVERSION="" \
-              LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
               RPMOPTS="--nodeps" \
               -j`nproc` \
               rpm-pkg

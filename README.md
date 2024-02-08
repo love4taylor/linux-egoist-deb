@@ -13,25 +13,13 @@ dpkg -i linux-libc-dev_*.dev #optional
 # Then reboot
 ```
 
-## Dependencies
-
-- Clang & LLVM (Because of LTO, which is required when you compile modules with DKMS.)
-
-  ```
-  VERSION=17.0.6
-  curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${VERSION}-x86_64.tar.gz
-  sudo tar avxf llvm-${VERSION}-x86_64.tar.gz -C /opt/
-  # for BASH
-  echo "export PATH=\"/opt/llvm-${VERSION}/bin:\$PATH\"" | sudo tee -a ~/.bashrc
-  ```
-
 ## Patchs
 
 - [Netfilter nf_tables FullCone](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/netfilter/0001-netfilter-Add-netfilter-nf_tables-fullcone-support.patch?ref_type=heads)
 - [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
 - [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.6.y-xanmod/net/tcp/bbr3?ref_type=heads)
 - [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.6.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
-- [Clear Linux Patchs](https://github.com/clearlinux-pkgs/linux) (Exclude 0132, 0118, 0113, 0138, 0139, 0162: Clang not support)
+- [Clear Linux Patchs](https://github.com/clearlinux-pkgs/linux) (Exclude 0132, 0118, 0113, 0138, 0139)
 - [TCP Brutal](https://gist.github.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1)
 
 ## Notice
