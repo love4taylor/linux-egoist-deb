@@ -42,9 +42,11 @@ jobs:
             git config user.name "GitHub Actions"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git clone --depth 1 https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
-              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
-              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
-              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch
+             && for i in ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
+                  ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
+                  ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch; do 
+                    patch -Np1 -i ${i}
+                done
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
                   grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
