@@ -1,4 +1,4 @@
-name: Build stable Kernel Package
+name: Build stable kernel package
 
 on:
   workflow_dispatch:
@@ -20,9 +20,10 @@ jobs:
       runs-on: self-hosted
       steps:
         - uses: actions/checkout@v4
-        - name: Checkout Linux Kernel ${{ env.KERNEL_STABLE_VER }}
+        - name: Download linux kernel ${{ env.KERNEL_STABLE_VER }} source
           run: |
-            git clone --depth 1 --branch v${{ env.KERNEL_STABLE_VER }} https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux linux-${{ env.KERNEL_STABLE_VER }}
+            wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ env.KERNEL_STABLE_VER }}.tar.xz \
+              && tar xvf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
 
         - name: Setup dependencies
           run: |
@@ -32,31 +33,29 @@ jobs:
                  libelf-dev libssl-dev dwarves bison \
                  gawk openssl libssl-dev dkms libudev-dev \
                  libpci-dev libiberty-dev autoconf \
-                 rpm debhelper lz4
+                 debhelper lz4
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
             git config user.name "GitHub Actions"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git clone https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
-              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
-              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
-              && git am ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch
+            git clone --depth 1 https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
+              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
+              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
+              && patch -Np1 -i ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
                   grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
-                    echo "Applying patch ${i}..."
                     patch -Np1 -i "../clear-patches/${i}"
-                    git commit -am "[PATCH]: clearlinux-pkgs/linux/${i}"
                 done
-            curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1 && git commit -am "net-tcp_brutal: make it as a built-in kernel module"
+            curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
-            cp ../config.stable .config
-            scripts/config --set-str LOCALVERSION "-l4t-bbr3"
+            cp ../config .config
+            scripts/config --set-str LOCALVERSION "-clear-bbrv3"
             # FULLCONENAT
             scripts/config -e NFT_FULLCONE
             # xt_FLOWOFFLOAD
@@ -75,48 +74,24 @@ jobs:
               --set-str DEFAULT_NET_SCH fq
             # TCP Brutal
             scripts/config -m TCP_CONG_BRUTAL
-            # MGLRU
-            scripts/config -e LRU_GEN -e LRU_GEN_ENABLED -d LRU_GEN_STATS
             # Disable DEBUG
-            scripts/config -d DEBUG_INFO \
-              -d DEBUG_INFO_BTF \
-              -d DEBUG_INFO_DWARF4 \
-              -d DEBUG_INFO_DWARF5 \
-              -d PAHOLE_HAS_SPLIT_BTF \
-              -d DEBUG_INFO_BTF_MODULES \
-              -d SLUB_DEBUG \
-              -d PM_DEBUG \
-              -d PM_ADVANCED_DEBUG \
-              -d PM_SLEEP_DEBUG \
-              -d ACPI_DEBUG \
-              -d SCHED_DEBUG \
-              -d LATENCYTOP \
-              -d DEBUG_PREEMPT \
-              -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
-              -e DEBUG_INFO_NONE
+            scripts/config -e DEBUG_INFO_NONE \
+                           -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
+                           -d DEBUG_INFO_DWARF4 \
+                           -d DEBUG_INFO_DWARF5
 
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           env:
-            KBUILD_BUILD_TIMESTAMP: ''
+            DEBEMAIL: "love4taylor <i@love4taylor.com>"
             KDEB_COMPRESS: "xz"
           run: |
             make \
-              LOCALVERSION="" \
               olddefconfig
-            # Build deb
             make \
-              LOCALVERSION="" \
+              KDEB_PKGVERSION=$(make kernelversion)-${{ env.PKGVER }} \
               -j`nproc` \
               bindeb-pkg
-            # reset version
-            rm .version
-            # Build rpm
-            make \
-              LOCALVERSION="" \
-              RPMOPTS="--nodeps" \
-              -j`nproc` \
-              rpm-pkg
         
         - name: Upload config
           uses: actions/upload-artifact@v3
@@ -128,27 +103,14 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: deb
-            path: |
-              linux-image-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-headers-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-libc-dev_${{ env.KERNEL_STABLE_VER }}*.deb
+            path: linux-*.deb
         
-        - name: Upload rpm
-          uses: actions/upload-artifact@v3
-          with:
-            name: rpm
-            path: linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
-
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: |
-              linux-image-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-headers-${{ env.KERNEL_STABLE_VER }}-l4t-bbr3_*.deb
-              linux-libc-dev_${{ env.KERNEL_STABLE_VER }}*.deb
-              linux-${{ env.KERNEL_STABLE_VER }}/rpmbuild/RPMS/x86_64/kernel*-${{ env.KERNEL_STABLE_VER }}_*.rpm
+            artifacts: linux-*.deb
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
-            tag: v${{ env.KERNEL_STABLE_VER }}-l4t-bbr3
+            tag: ${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}
 
