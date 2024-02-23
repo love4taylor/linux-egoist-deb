@@ -33,7 +33,7 @@ jobs:
                  libelf-dev libssl-dev dwarves bison \
                  gawk openssl libssl-dev dkms libudev-dev \
                  libpci-dev libiberty-dev autoconf \
-                 debhelper lz4
+                 debhelper lz4 gcc-14
 
         - name: Apply patch
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -50,6 +50,10 @@ jobs:
                     patch -Np1 -i "../clear-patches/${i}"
                 done
             curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1
+            git clone --depth 1 --branch 6.7 https://anongit.gentoo.org/git/proj/linux-patches.git ../gentoo-patches \
+             && patch -Np1 -i ../gentoo-patches/2930_gcc14-btrfs-fix-kvcalloc-args-order.patch \
+             && patch -Np1 -i ../gentoo-patches/2931_gcc14-drm-i915-Adapt-to-Walloc-size.patch \
+             && patch -Np1 -i ../gentoo-patches/2932_gcc14-objtool-Fix-calloc-call-for-new-Walloc-size.patch
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -87,9 +91,13 @@ jobs:
             KDEB_COMPRESS: "xz"
           run: |
             make \
+              CC="gcc-14" \
+              HOSTCC="gcc-14" \
               olddefconfig
             make \
               KDEB_PKGVERSION=$(make kernelversion)-${{ env.PKGVER }} \
+              CC="gcc-14" \
+              HOSTCC="gcc-14" \
               -j`nproc` \
               bindeb-pkg
         
