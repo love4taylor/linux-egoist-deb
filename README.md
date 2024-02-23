@@ -6,7 +6,7 @@ Based on the Debian Cloud Kernel configuration file
 
 ```shell
 # You need to install curl, wget and jq first.
-wget $(curl -s https://api.github.com/repos/love4taylor/bbr3-kernel-pkg/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | .browser_download_url')
+wget $(curl -s https://api.github.com/repos/love4taylor/linux-self-use-deb/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | .browser_download_url')
 dpkg -i linux-headers-*.deb
 dpkg -i linux-image-*.deb
 dpkg -i linux-libc-dev_*.dev #optional
