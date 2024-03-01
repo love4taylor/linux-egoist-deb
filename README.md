@@ -2,6 +2,19 @@
 
 Based on the Debian Cloud Kernel configuration file
 
+## Support Microarchitecture
+
+Starting with 6.7.7, the kernel will minimally support the x86-64-v2 Microarchitecture.
+
+```
+love4taylor@sony-nuro-n1:~$ /lib64/ld-linux-x86-64.so.2 --help | grep supported
+  x86-64-v3 (supported, searched)
+  x86-64-v2 (supported, searched)
+  haswell (AT_PLATFORM; supported, searched)
+  tls (supported, searched)
+  x86_64 (supported, searched)
+```
+
 ## Installation
 
 ```shell
