@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.7.6
+  KERNEL_STABLE_VER: 6.7.7
   PKGVER: 1
 
 jobs:
@@ -56,13 +56,17 @@ jobs:
             git clone --depth 1 --branch 6.7 https://anongit.gentoo.org/git/proj/linux-patches.git ../gentoo-patches \
              && patch -Np1 -i ../gentoo-patches/2930_gcc14-btrfs-fix-kvcalloc-args-order.patch \
              && patch -Np1 -i ../gentoo-patches/2931_gcc14-drm-i915-Adapt-to-Walloc-size.patch \
-             && patch -Np1 -i ../gentoo-patches/2932_gcc14-objtool-Fix-calloc-call-for-new-Walloc-size.patch
+             && patch -Np1 -i ../gentoo-patches/2932_gcc14-objtool-Fix-calloc-call-for-new-Walloc-size.patch \
+             && patch -Np1 -i ../gentoo-patches/5010_enable-cpu-optimizations-universal.patch
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
             cp ../config .config
             scripts/config --set-str LOCALVERSION "-clear-bbrv3"
+            # x86-64-v2
+            scripts/config -d GENERIC_CPU \
+                           -e GENERIC_CPU2
             # FULLCONENAT
             scripts/config -e NFT_FULLCONE
             # xt_FLOWOFFLOAD
