@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.7.8
+  KERNEL_STABLE_VER: 6.7.9
   PKGVER: 1
 
 jobs:
