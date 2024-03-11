@@ -28,7 +28,9 @@ dpkg -i linux-libc-dev_*.dev #optional
 
 ## Patchs
 
-- [Netfilter nf_tables FullCone](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.7.y-xanmod/net/netfilter/0001-netfilter-Add-netfilter-nf_tables-fullcone-support.patch?ref_type=heads)
+- [kernel_compiler_patch](https://github.com/graysky2/kernel_compiler_patch)
+
+- Broadcom fullcone NAT from [ASUS Merlin](https://github.com/RMerl/asuswrt-merlin.ng)
 - [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.7.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
 - [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.7.y-xanmod/net/tcp/bbr3?ref_type=heads)
 - [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.7.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
@@ -39,3 +41,4 @@ dpkg -i linux-libc-dev_*.dev #optional
 
 1. It is recommended to add `quiet console=tty0 console=ttyS0,115200n8 cryptomgr.notests initcall_debug intel_iommu=igfx_off kvm-intel.nested=1 no_timer_check noreplace-smp page_alloc.shuffle=1 rcupdate.rcu_expedited=1 rootfstype=ext4,btrfs,xfs,f2fs tsc=reliable rw` to the boot cmdline if you are using an **Intel** CPU.
 2. **The kernel has a built-in TCP Brutal module, please do not use the official script to install the DKMS module at the same time.**
+3. To avoid having to recompile iptables, I've [**hardcoded**](https://github.com/love4taylor/linux-self-use-deb/blob/ad1fcc5bb6c0da7f7584c029584f7a9f82f30ed4/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch#L245-L249) fullcone to be enabled, so you can just use MASQUERADE as usual and it will **force** to fullcone.
