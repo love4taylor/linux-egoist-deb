@@ -14,7 +14,7 @@ on:
 env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.7.9
-  PKGVER: 1
+  PKGVER: 2
 
 jobs:
     build:
@@ -44,7 +44,7 @@ jobs:
             git clone https://github.com/graysky2/kernel_compiler_patch.git ../kernel_compiler_patch \
              && patch -Np1 -i ../kernel_compiler_patch/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
             git clone --depth 1 https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
-             && for i in ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*.patch \
+             && for i in ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
                   ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
                   ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch; do 
                     patch -Np1 -i ${i}
@@ -55,6 +55,7 @@ jobs:
                     patch -Np1 -i "../clear-patches/${i}"
                 done
             curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1
+            patch -Np1 -i ../0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
 
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
@@ -64,8 +65,6 @@ jobs:
             # x86-64-v2
             scripts/config -d GENERIC_CPU \
                            -e GENERIC_CPU2
-            # FULLCONENAT
-            scripts/config -e NFT_FULLCONE
             # xt_FLOWOFFLOAD
             scripts/config -e NETFILTER_XT_TARGET_FLOWOFFLOAD
             # BBR3
