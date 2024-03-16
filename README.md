@@ -1,6 +1,6 @@
 # Self-use kernel
 
-Based on the Debian Cloud Kernel configuration file
+Based on the Debian generic kernel configuration file
 
 ## Support Microarchitecture
 
@@ -29,11 +29,10 @@ dpkg -i linux-libc-dev_*.dev #optional
 ## Patchs
 
 - [kernel_compiler_patch](https://github.com/graysky2/kernel_compiler_patch)
-
 - Broadcom fullcone NAT from [ASUS Merlin](https://github.com/RMerl/asuswrt-merlin.ng)
-- [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.7.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
-- [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.7.y-xanmod/net/tcp/bbr3?ref_type=heads)
-- [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.7.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
+- [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.8.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
+- [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.8.y-xanmod/net/tcp/bbr3?ref_type=heads)
+- [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.8.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
 - [Clear Linux Patchs](https://github.com/clearlinux-pkgs/linux) (Exclude 0132, 0118, 0113, 0138, 0139)
 - [TCP Brutal](https://gist.github.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1)
 
