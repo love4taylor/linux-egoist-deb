@@ -123,16 +123,17 @@ jobs:
               bindeb-pkg
         
         - name: Upload config
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: config
             path: linux-${{ env.KERNEL_STABLE_VER }}/.config
         
         - name: Upload deb
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: deb
             path: linux-*.deb
+            compression-level: 0
         
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
