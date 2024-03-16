@@ -13,8 +13,8 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.7.9
-  PKGVER: 2
+  KERNEL_STABLE_VER: 6.8.1
+  PKGVER: 1
 
 jobs:
     build:
@@ -42,11 +42,11 @@ jobs:
             git config user.name "GitHub Actions"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git clone https://github.com/graysky2/kernel_compiler_patch.git ../kernel_compiler_patch \
-             && patch -Np1 -i ../kernel_compiler_patch/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
+             && patch -Np1 -i ../kernel_compiler_patch/more-uarches-for-kernel-6.8-rc4+.patch
             git clone --depth 1 https://gitlab.com/xanmod/linux-patches.git ../xanmod-patches \
-             && for i in ../xanmod-patches/linux-6.7.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
-                  ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/bbr3/*.patch \
-                  ../xanmod-patches/linux-6.7.y-xanmod/net/tcp/cloudflare/*.patch; do 
+             && for i in ../xanmod-patches/linux-6.8.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
+                  ../xanmod-patches/linux-6.8.y-xanmod/net/tcp/bbr3/*.patch \
+                  ../xanmod-patches/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
                     patch -Np1 -i ${i}
                 done
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
