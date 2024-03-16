@@ -24,7 +24,7 @@ jobs:
         - name: Download linux kernel ${{ env.KERNEL_STABLE_VER }} source
           run: |
             wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ env.KERNEL_STABLE_VER }}.tar.xz \
-              && tar xvf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
+              && tar vf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
 
         - name: Setup dependencies
           run: |
@@ -81,11 +81,6 @@ jobs:
               --set-str DEFAULT_NET_SCH fq
             # TCP Brutal
             scripts/config -m TCP_CONG_BRUTAL
-            # Disable DEBUG
-            scripts/config -e DEBUG_INFO_NONE \
-                           -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
-                           -d DEBUG_INFO_DWARF4 \
-                           -d DEBUG_INFO_DWARF5
 
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
