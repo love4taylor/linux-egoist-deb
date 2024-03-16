@@ -19,7 +19,7 @@ love4taylor@sony-nuro-n1:~$ /lib64/ld-linux-x86-64.so.2 --help | grep supported
 
 ```shell
 # You need to install wget and jq first.
-wget -q --progress $(wget -q -O - https://api.github.com/repos/love4taylor/linux-self-use-deb/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | select(.name | contains ("libc") or contains ("dbg") | not) | .browser_download_url')
+wget -q --show-progress $(wget -q -O - https://api.github.com/repos/love4taylor/linux-self-use-deb/releases/latest  | jq -r '.assets[] | select(.name | contains ("deb")) | select(.name | contains ("libc") or contains ("dbg") | not) | .browser_download_url')
 sudo dpkg -i linux-headers-*.deb
 sudo dpkg -i linux-image-*.deb
 # Then reboot
