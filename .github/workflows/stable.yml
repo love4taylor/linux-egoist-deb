@@ -61,7 +61,11 @@ jobs:
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
             cp ../config .config
-            scripts/config --set-str LOCALVERSION "-clear-bbrv3"
+            scripts/config --set-str LOCALVERSION "-EGOIST" \
+                           --set-str DEFAULT_HOSTNAME "Inori"
+            # /proc/config.gz
+            scripts/config -e IKCONFIG \
+                           -e IKCONFIG_PROC
             # x86-64-v2
             scripts/config -d GENERIC_CPU \
                            -e GENERIC_CPU2
@@ -85,6 +89,25 @@ jobs:
             scripts/config -e ZSWAP_DEFAULT_ON \
                            -d ZSWAP_COMPRESSOR_DEFAULT_LZO \
                            -e ZSWAP_COMPRESSOR_DEFAULT_ZSTD
+            # NTFS3
+            scripts/config -m NTFS3_FS \
+                           -e NTFS3_LZX_XPRESS \
+                           -e NTFS3_FS_POSIX_ACL
+            # SMB
+            scripts/config -m SMB_SERVER \
+                           -e SMB_SERVER_SMBDIRECT \
+                           -e SMB_SERVER_CHECK_CAP_NET_ADMIN \
+                           -e SMB_SERVER_KERBEROS5
+            # Security
+            scripts/config -e SECURITY_SELINUX \
+                           -e SECURITY_SELINUX_BOOTPARAM \
+                           -e SECURITY_SMACK \
+                           -e SECURITY_SMACK_BRINGUP \
+                           -e SECURITY_SMACK_NETFILTER \
+                           -e SECURITY_SMACK_APPEND_SIGNALS \
+                           -e SECURITY_TOMOYO \
+                           -e SECURITY_APPARMOR \
+                           -e SECURITY_YAMA
 
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
