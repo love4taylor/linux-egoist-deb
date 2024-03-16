@@ -24,7 +24,7 @@ jobs:
         - name: Download linux kernel ${{ env.KERNEL_STABLE_VER }} source
           run: |
             wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ env.KERNEL_STABLE_VER }}.tar.xz \
-              && tar vf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
+              && tar xf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
 
         - name: Setup dependencies
           run: |
