@@ -51,7 +51,7 @@ jobs:
                 done
             git clone https://github.com/clearlinux-pkgs/linux.git ../clear-patches \
              && for i in $(grep '^Patch' ../clear-patches/linux.spec |\
-                  grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139' | sed -n 's/.*: //p'); do
+                  grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0107|^Patch0109|^Patch0136|^Patch0147' | sed -n 's/.*: //p'); do
                     patch -Np1 -i "../clear-patches/${i}"
                 done
             curl -sSL https://gist.githubusercontent.com/love4taylor/111d56cd2b1dc149cba6d80f617f47b1/raw/1ea1a5df138c881d5b29ea1a02bb3e88f1ff9b4b/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch | patch -Np1
