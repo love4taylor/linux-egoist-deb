@@ -69,18 +69,22 @@ jobs:
             scripts/config -e NETFILTER_XT_TARGET_FLOWOFFLOAD
             # BBR3
             scripts/config -m TCP_CONG_CUBIC \
-              -d DEFAULT_CUBIC \
-              -e TCP_CONG_BBR \
-              -e DEFAULT_BBR \
-              --set-str DEFAULT_TCP_CONG bbr
+                           -d DEFAULT_CUBIC \
+                           -e TCP_CONG_BBR \
+                           -e DEFAULT_BBR \
+                           --set-str DEFAULT_TCP_CONG bbr
             # BBR3 doesn't work properly with FQ_CODEL
             scripts/config -m NET_SCH_FQ_CODEL \
-              -e NET_SCH_FQ \
-              -d DEFAULT_FQ_CODEL \
-              -e DEFAULT_FQ \
-              --set-str DEFAULT_NET_SCH fq
+                           -e NET_SCH_FQ \
+                           -d DEFAULT_FQ_CODEL \
+                           -e DEFAULT_FQ \
+                           --set-str DEFAULT_NET_SCH fq
             # TCP Brutal
             scripts/config -m TCP_CONG_BRUTAL
+            # zswap
+            scripts/config -e ZSWAP_DEFAULT_ON \
+                           -d ZSWAP_COMPRESSOR_DEFAULT_LZO \
+                           -e ZSWAP_COMPRESSOR_DEFAULT_ZSTD
 
         - name: Build
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
