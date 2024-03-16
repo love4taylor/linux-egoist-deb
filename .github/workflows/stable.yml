@@ -61,8 +61,8 @@ jobs:
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
             cp ../config .config
-            scripts/config --set-str LOCALVERSION "-EGOIST" \
-                           --set-str DEFAULT_HOSTNAME "Inori"
+            scripts/config --set-str LOCALVERSION "-egoist" \
+                           --set-str DEFAULT_HOSTNAME "inori"
             # /proc/config.gz
             scripts/config -e IKCONFIG \
                            -e IKCONFIG_PROC
