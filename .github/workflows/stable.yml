@@ -48,25 +48,25 @@ jobs:
             && tar xvf linux-${{ env.KERNEL_STABLE_VER }}.tar.xz
 
   apply_patch:
-    name: Apply patch
+    name: Apply patches
     needs: [apt, checkout, download_source]
     runs-on: self-hosted
     steps:
       - working-directory: linux-${{ env.KERNEL_STABLE_VER }}
         run: |
-          patch -Np1 -i ../patchs/kernel_compiler_patch/more-uarches-for-kernel-6.8-rc4+.patch
-          for i in ../patchs/xanmod/linux-6.8.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
-            ../patchs/xanmod/linux-6.8.y-xanmod/net/tcp/bbr3/*.patch \
-            ../patchs/xanmod/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
+          patch -Np1 -i ../patches/kernel_compiler_patch/more-uarches-for-kernel-6.8-rc4+.patch
+          for i in ../patches/xanmod/linux-6.8.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
+            ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/bbr3/*.patch \
+            ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
             patch -Np1 -i ${i}
           done
-          for i in $(grep '^Patch' ../patchs/clearlinux/linux.spec |\
+          for i in $(grep '^Patch' ../patches/clearlinux/linux.spec |\
             grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147' | sed -n 's/.*: //p'); do
-              patch -Np1 -i "../patchs/clearlinux/${i}"
+              patch -Np1 -i "../patches/clearlinux/${i}"
           done
-          patch -Np1 -i ../patchs/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
-          patch -Np1 -i ../patchs/others/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
-          patch -Np1 -i ../patchs/others/0001-add-KDEB_DESTDIR-env.patch
+          patch -Np1 -i ../patches/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
+          patch -Np1 -i ../patches/others/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
+          patch -Np1 -i ../patches/others/0001-add-KDEB_DESTDIR-env.patch
 
   setup_config:
     name: Setup config
