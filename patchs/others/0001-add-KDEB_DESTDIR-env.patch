@@ -1,0 +1,25 @@
+From 480eacc4dc1aaf06b9e80742e8c6ea099b697a13 Mon Sep 17 00:00:00 2001
+From: love4taylor <i@love4taylor.com>
+Date: Sun, 24 Mar 2024 14:58:08 +0900
+Subject: [PATCH] add KDEB_DESTDIR env
+
+---
+ scripts/package/builddeb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+index bf96a3c24..37fc6483b 100755
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -33,7 +33,7 @@ create_package() {
+ 	dh_fixperms
+ 	dh_gencontrol
+ 	dh_md5sums
+-	dh_builddeb -- ${KDEB_COMPRESS:+-Z$KDEB_COMPRESS}
++	dh_builddeb --destdir=${KDEB_DESTDIR:-..} -- ${KDEB_COMPRESS:+-Z$KDEB_COMPRESS}
+ }
+ 
+ install_linux_image () {
+-- 
+2.39.2
+
