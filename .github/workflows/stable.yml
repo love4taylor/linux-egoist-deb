@@ -78,7 +78,7 @@ jobs:
             patch -Np1 -i ${i}
           done
           for i in $(grep '^Patch' ../../patchs/clearlinux/linux.spec |\
-            grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109' | sed -n 's/.*: //p'); do
+            grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147' | sed -n 's/.*: //p'); do
               patch -Np1 -i "../../patchs/clearlinux/${i}"
           done
           patch -Np1 -i ../../patchs/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
