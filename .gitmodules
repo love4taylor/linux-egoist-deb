@@ -1,0 +1,9 @@
+[submodule "patchs/kernel_compiler_patch"]
+	path = patchs/kernel_compiler_patch
+	url = https://github.com/graysky2/kernel_compiler_patch.git
+[submodule "patchs/xanmod"]
+	path = patchs/xanmod
+	url = https://gitlab.com/xanmod/linux-patches.git
+[submodule "patchs/clearlinux"]
+	path = patchs/clearlinux
+	url = https://github.com/clearlinux-pkgs/linux.git
