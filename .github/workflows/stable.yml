@@ -19,6 +19,11 @@ env:
 jobs:
     build:
       runs-on: self-hosted
+      strategy:
+        max-parallel: 1
+        fail-fast: false
+        matrix:
+          config: [generic, cloud]
       steps:
         - uses: actions/checkout@v4
         - name: Download linux kernel ${{ env.KERNEL_STABLE_VER }} source
@@ -60,46 +65,55 @@ jobs:
         - name: Copy .config and setup some config
           working-directory: linux-${{ env.KERNEL_STABLE_VER }}
           run: |
-            cp ../config .config
-            scripts/config --set-str LOCALVERSION "-egoist" \
-                           --set-str DEFAULT_HOSTNAME "inori"
+            scripts/config --file ../config.${{ matrix.config }} \
+                           --set-str LOCALVERSION "-egoist-${{ matrix.config }}"
             # /proc/config.gz
-            scripts/config -e IKCONFIG \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -e IKCONFIG \
                            -e IKCONFIG_PROC
             # x86-64-v2
-            scripts/config -d GENERIC_CPU \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -d GENERIC_CPU \
                            -e GENERIC_CPU2
             # xt_FLOWOFFLOAD
-            scripts/config -e NETFILTER_XT_TARGET_FLOWOFFLOAD
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -e NETFILTER_XT_TARGET_FLOWOFFLOAD
             # BBR3
-            scripts/config -m TCP_CONG_CUBIC \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -m TCP_CONG_CUBIC \
                            -d DEFAULT_CUBIC \
                            -e TCP_CONG_BBR \
                            -e DEFAULT_BBR \
                            --set-str DEFAULT_TCP_CONG bbr
             # BBR3 doesn't work properly with FQ_CODEL
-            scripts/config -m NET_SCH_FQ_CODEL \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -m NET_SCH_FQ_CODEL \
                            -e NET_SCH_FQ \
                            -d DEFAULT_FQ_CODEL \
                            -e DEFAULT_FQ \
                            --set-str DEFAULT_NET_SCH fq
             # TCP Brutal
-            scripts/config -m TCP_CONG_BRUTAL
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -m TCP_CONG_BRUTAL
             # zswap
-            scripts/config -e ZSWAP_DEFAULT_ON \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -e ZSWAP_DEFAULT_ON \
                            -d ZSWAP_COMPRESSOR_DEFAULT_LZO \
                            -e ZSWAP_COMPRESSOR_DEFAULT_ZSTD
             # NTFS3
-            scripts/config -m NTFS3_FS \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -m NTFS3_FS \
                            -e NTFS3_LZX_XPRESS \
                            -e NTFS3_FS_POSIX_ACL
             # SMB
-            scripts/config -m SMB_SERVER \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -m SMB_SERVER \
                            -e SMB_SERVER_SMBDIRECT \
                            -e SMB_SERVER_CHECK_CAP_NET_ADMIN \
                            -e SMB_SERVER_KERBEROS5
             # Security
-            scripts/config -e SECURITY_SELINUX \
+            scripts/config --file ../config.${{ matrix.config }} \
+                           -e SECURITY_SELINUX \
                            -e SECURITY_SELINUX_BOOTPARAM \
                            -e SECURITY_SMACK \
                            -e SECURITY_SMACK_BRINGUP \
@@ -116,8 +130,10 @@ jobs:
             KDEB_COMPRESS: "xz"
           run: |
             make \
+              KCONFIG_CONFIG=../config.${{ matrix.config }} \
               olddefconfig
             make \
+              KCONFIG_CONFIG=../config.${{ matrix.config }} \
               KDEB_PKGVERSION=$(make kernelversion)-${{ env.PKGVER }} \
               -j`nproc` \
               bindeb-pkg
@@ -125,21 +141,26 @@ jobs:
         - name: Upload config
           uses: actions/upload-artifact@v4
           with:
-            name: config
-            path: linux-${{ env.KERNEL_STABLE_VER }}/.config
+            name: config.${{ matrix.config }}
+            path: config.${{ matrix.config }}
         
         - name: Upload deb
           uses: actions/upload-artifact@v4
           with:
-            name: deb
-            path: linux-*.deb
+            name: deb.${{ matrix.config }}
+            path: |
+              linux-image-${{ env.KERNEL_STABLE_VER }}-egoist-${{ matrix.config }}_${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}_amd64.deb
+              linux-headers-${{ env.KERNEL_STABLE_VER }}-egoist-${{ matrix.config }}_${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}_amd64.deb
             compression-level: 0
         
         - name: Release
           if: ${{ github.event.inputs.release != 'none' }}
           uses: ncipollo/release-action@v1
           with:
-            artifacts: linux-*.deb
+            allowUpdates: true
+            artifacts: |
+              linux-image-${{ env.KERNEL_STABLE_VER }}-egoist-${{ matrix.config }}_${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}_amd64.deb
+              linux-headers-${{ env.KERNEL_STABLE_VER }}-egoist-${{ matrix.config }}_${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}_amd64.deb
             prerelease: ${{ github.event.inputs.release == 'pre-release' }}
             makeLatest: ${{ github.event.inputs.release == 'release' }}
             tag: ${{ env.KERNEL_STABLE_VER }}-${{ env.PKGVER }}
