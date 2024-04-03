@@ -66,6 +66,7 @@ jobs:
           done
           patch -Np1 -i ../patches/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/others/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
+          patch -Np1 -i ../patches/echo-cpu-scheduler/6.8.y/linux-6.8-echo.patch
 
   setup_config:
     name: Setup config
@@ -85,6 +86,11 @@ jobs:
           scripts/config --file ../config.${{ matrix.config }} \
                          -e IKCONFIG \
                          -e IKCONFIG_PROC
+          # ECHO Scheduler needed
+          scripts/config --file ../config.${{ matrix.config }} \
+                         -d FAIR_GROUP_SCHED \
+                         -d SCHED_AUTOGROUP \
+                         -d SCHED_CORE
           # x86-64-v2
           scripts/config --file ../config.${{ matrix.config }} \
                          -d GENERIC_CPU \
