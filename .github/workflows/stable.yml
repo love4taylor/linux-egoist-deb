@@ -14,7 +14,7 @@ on:
 env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.8.3
-  PKGVER: 1
+  PKGVER: 2
 
 jobs:
   apt:
