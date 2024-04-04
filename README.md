@@ -60,7 +60,6 @@ sudo dpkg -i linux-image-*-egoist-generic_*.deb
 ## Patchs
 
 - [kernel_compiler_patch](https://github.com/graysky2/kernel_compiler_patch)
-- [ECHO CPU Scheduler](https://github.com/hamadmarri/ECHO-CPU-Scheduler)
 - Broadcom fullcone NAT from [ASUS Merlin](https://github.com/RMerl/asuswrt-merlin.ng)
 - [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.8.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
 - [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.8.y-xanmod/net/tcp/bbr3?ref_type=heads)

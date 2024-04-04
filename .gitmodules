@@ -4,9 +4,6 @@
 [submodule "patches/xanmod"]
 	path = patches/xanmod
 	url = https://gitlab.com/xanmod/linux-patches.git
-[submodule "patches/echo-cpu-scheduler"]
-	path = patches/echo-cpu-scheduler
-	url = https://github.com/hamadmarri/ECHO-CPU-Scheduler.git
 [submodule "patches/cachy"]
 	path = patches/cachy
 	url = https://github.com/CachyOS/kernel-patches.git
