@@ -1,8 +1,7 @@
-From 1faa8215daa4808034225c0a2903d8586be8d1ab Mon Sep 17 00:00:00 2001
+From aa6ba6895b2af23c6b1aca0944d7785af015113d Mon Sep 17 00:00:00 2001
 From: love4taylor <i@love4taylor.com>
 Date: Mon, 11 Mar 2024 22:42:18 +0900
-Subject: [PATCH] netfilter: nat: add brcm fullcone support from ASUS Merlin
- kernel
+Subject: [PATCH 1/2] netfilter: nat: add brcm fullcone support
 
 ---
  net/netfilter/nf_nat_masquerade.c | 193 ++++++++++++++++++++++++++++++
@@ -10,7 +9,7 @@ Subject: [PATCH] netfilter: nat: add brcm fullcone support from ASUS Merlin
  2 files changed, 200 insertions(+)
 
 diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
-index 1a506b0c6..fbde277b0 100644
+index 1a506b0c6511..fbde277b0e08 100644
 --- a/net/netfilter/nf_nat_masquerade.c
 +++ b/net/netfilter/nf_nat_masquerade.c
 @@ -8,6 +8,9 @@
@@ -235,7 +234,7 @@ index 1a506b0c6..fbde277b0 100644
  	/* check if the notifiers still have clients */
  	if (--masq_refcnt > 0)
 diff --git a/net/netfilter/xt_MASQUERADE.c b/net/netfilter/xt_MASQUERADE.c
-index eae05c178..e8072f0c5 100644
+index eae05c178336..e8072f0c5a0c 100644
 --- a/net/netfilter/xt_MASQUERADE.c
 +++ b/net/netfilter/xt_MASQUERADE.c
 @@ -42,6 +42,13 @@ masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
