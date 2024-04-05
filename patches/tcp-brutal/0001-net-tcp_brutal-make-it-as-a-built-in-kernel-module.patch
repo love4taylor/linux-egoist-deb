@@ -1,7 +1,8 @@
-From 57385df8126bf323e881d5fe099382f36f1af364 Mon Sep 17 00:00:00 2001
+From 99c24dd6eb2b39e883431874ccae6eaccc735cea Mon Sep 17 00:00:00 2001
 From: love4taylor <i@love4taylor.com>
 Date: Thu, 30 Nov 2023 22:51:13 +0900
-Subject: [PATCH] net-tcp_brutal: make it as a built-in kernel module
+Subject: [PATCH 1/2] net-tcp_brutal: make it as a built-in kernel module
+
 ---
  net/ipv4/Kconfig      |   9 ++
  net/ipv4/Makefile     |   1 +
@@ -10,7 +11,7 @@ Subject: [PATCH] net-tcp_brutal: make it as a built-in kernel module
  create mode 100644 net/ipv4/tcp_brutal.c
 
 diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index 2dfb12230..00e9b8244 100644
+index 8e94ed7c56a0..c58e7de8bfe3 100644
 --- a/net/ipv4/Kconfig
 +++ b/net/ipv4/Kconfig
 @@ -678,6 +678,15 @@ config TCP_CONG_BBR
@@ -30,10 +31,10 @@ index 2dfb12230..00e9b8244 100644
  	prompt "Default TCP congestion control"
  	default DEFAULT_CUBIC
 diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index b18ba8ef9..3f93d3469 100644
+index ec36d2ec059e..0647ec2ff635 100644
 --- a/net/ipv4/Makefile
 +++ b/net/ipv4/Makefile
-@@ -47,6 +47,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.o
+@@ -45,6 +45,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.o
  obj-$(CONFIG_INET_UDP_DIAG) += udp_diag.o
  obj-$(CONFIG_INET_RAW_DIAG) += raw_diag.o
  obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
@@ -43,7 +44,7 @@ index b18ba8ef9..3f93d3469 100644
  obj-$(CONFIG_TCP_CONG_CUBIC) += tcp_cubic.o
 diff --git a/net/ipv4/tcp_brutal.c b/net/ipv4/tcp_brutal.c
 new file mode 100644
-index 000000000..98eebf1b6
+index 000000000000..98eebf1b6f2c
 --- /dev/null
 +++ b/net/ipv4/tcp_brutal.c
 @@ -0,0 +1,311 @@

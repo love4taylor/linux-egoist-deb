@@ -64,8 +64,9 @@ jobs:
           patch -Np1 -i ../patches/cachy/6.8/0008-zstd.patch
           patch -Np1 -i ../patches/cachy/6.8/misc/intel/0001-intel-thread-director.patch
           patch -Np1 -i ../patches/cachy/6.8/misc/intel/0002-pcores-fair.patch
-          patch -Np1 -i ../patches/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
-          patch -Np1 -i ../patches/others/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
+          patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
+          patch -Np1 -i ../patches/tcp-brutal/0002-net-tcp_brutal-use-div_u64-to-let-it-build-on-32-bit.patch
+          patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support-from-ASUS.patch
 
   setup_config:
     name: Setup config
