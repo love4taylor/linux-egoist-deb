@@ -60,6 +60,7 @@ jobs:
             ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
             patch -Np1 -i ${i}
           done
+          patch -Np1 -i ../patches/cachy/6.8/0001-aex-xts.patch
           patch -Np1 -i ../patches/cachy/6.8/0007-ksm.patch
           patch -Np1 -i ../patches/cachy/6.8/0008-zstd.patch
           patch -Np1 -i ../patches/cachy/6.8/misc/intel/0001-intel-thread-director.patch
