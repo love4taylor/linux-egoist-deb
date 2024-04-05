@@ -60,6 +60,10 @@ jobs:
             ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
             patch -Np1 -i ${i}
           done
+          for i in $(grep '^Patch' ../patches/clearlinux/linux.spec |\
+            grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147' | sed -n 's/.*: //p'); do
+              patch -Np1 -i "../patches/clearlinux/${i}"
+          done
           patch -Np1 -i ../patches/cachy/6.8/0001-aex-xts.patch
           patch -Np1 -i ../patches/cachy/6.8/0007-ksm.patch
           patch -Np1 -i ../patches/cachy/6.8/0008-zstd.patch
