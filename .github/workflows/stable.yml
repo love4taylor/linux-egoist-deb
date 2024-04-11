@@ -14,7 +14,7 @@ on:
 env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.8.5
-  PKGVER: 1
+  PKGVER: 2
 
 jobs:
   apt:
@@ -116,9 +116,15 @@ jobs:
                          -m TCP_CONG_BRUTAL
           # zswap
           scripts/config --file ../config.${{ matrix.config }} \
+                         -e ZPOOL \
+                         -e ZSWAP \
                          -e ZSWAP_DEFAULT_ON \
                          -d ZSWAP_COMPRESSOR_DEFAULT_LZO \
-                         -e ZSWAP_COMPRESSOR_DEFAULT_ZSTD
+                         -e ZSWAP_COMPRESSOR_DEFAULT_ZSTD \
+                         -e ZSWAP_ZPOOL_DEFAULT_ZSMALLOC \
+                         -e ZBUD \
+                         -m Z3FOLD \
+                         -e ZSMALLOC
           # NTFS3
           scripts/config --file ../config.${{ matrix.config }} \
                          -m NTFS3_FS \
