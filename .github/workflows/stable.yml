@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.8.6
+  KERNEL_STABLE_VER: 6.8.7
   PKGVER: 1
 
 jobs:
@@ -66,7 +66,7 @@ jobs:
           done
           patch -Np1 -i ../patches/cachy/6.8/0001-aes-xts.patch
           patch -Np1 -i ../patches/cachy/6.8/0007-ksm.patch
-          patch -Np1 -i ../patches/cachy/6.8/0008-zstd.patch
+          patch -Np1 -i ../patches/cachy/6.8/0009-zstd.patch
           patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/tcp-brutal/0002-net-tcp_brutal-use-div_u64-to-let-it-build-on-32-bit.patch
           patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support.patch
