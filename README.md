@@ -61,12 +61,12 @@ sudo dpkg -i linux-image-*-egoist-generic_*.deb
 
 - [kernel_compiler_patch](https://github.com/graysky2/kernel_compiler_patch)
 - Broadcom fullcone NAT from [ASUS Merlin](https://github.com/RMerl/asuswrt-merlin.ng)
-- [Netfilter xt_FLOWOFFLOAD](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.8.y-xanmod/net/netfilter/0002-netfilter-add-xt_FLOWOFFLOAD-target.patch?ref_type=heads)
 - [BBRv3](https://gitlab.com/xanmod/linux-patches/-/tree/master/linux-6.8.y-xanmod/net/tcp/bbr3?ref_type=heads)
 - [Cloudflare: Add a sysctl to skip tcp collapse processing when the receive  buffer is full](https://gitlab.com/xanmod/linux-patches/-/blob/master/linux-6.8.y-xanmod/net/tcp/cloudflare/0001-tcp-Add-a-sysctl-to-skip-tcp-collapse-processing-whe.patch?ref_type=heads) ([How-to-use](https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/))
 - [TCP Brutal](https://github.com/love4taylor/linux-self-use-deb/blob/master/patches/others/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch)
 - [Latest ZSTD](https://github.com/CachyOS/kernel-patches/blob/master/6.8/0008-zstd.patch)
 - [Userspace KSM](https://github.com/CachyOS/kernel-patches/blob/master/6.8/0007-ksm.patch) (You need build [uksmd](https://codeberg.org/pf-kernel/uksmd) by yourself)
+- [Clearlinux](https://github.com/clearlinux-pkgs/linux)
 
 ## Notice
 
