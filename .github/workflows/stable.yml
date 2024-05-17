@@ -15,6 +15,7 @@ env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.8.8
   PKGVER: 1
+  LLVM_VER: 18.1.5
 
 jobs:
   apt:
@@ -28,7 +29,9 @@ jobs:
                  libelf-dev libssl-dev dwarves bison \
                  gawk openssl libssl-dev dkms libudev-dev \
                  libpci-dev libiberty-dev autoconf \
-                 debhelper lz4
+                 debhelper lz4 \
+            && curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${{ env.LLVM_VER }}-x86_64.tar.gz \
+            && tar avxf llvm-${{ env.LLVM_VER }}-x86_64.tar.gz
   checkout:
     name: Checkout main repo
     needs: apt
@@ -55,18 +58,22 @@ jobs:
       - working-directory: linux-${{ env.KERNEL_STABLE_VER }}
         run: |
           patch -Np1 -i ../patches/kernel_compiler_patch/more-uarches-for-kernel-6.8-rc4+.patch
-          for i in ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/bbr3/*.patch \
+          for i in ../patches/xanmod/linux-6.8.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
+            ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/bbr3/*.patch \
             ../patches/xanmod/linux-6.8.y-xanmod/net/tcp/cloudflare/*.patch; do 
             patch -Np1 -i ${i}
           done
           for i in $(grep '^Patch' ../patches/clearlinux/linux.spec |\
             grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147' | sed -n 's/.*: //p'); do
+              if [ "${i}" == "0162-extra-optmization-flags.patch" ] ; then
+                continue
+              fi
               patch -Np1 -i "../patches/clearlinux/${i}"
           done
-          patch -Np1 -i ../patches/cachy/6.8/0001-aes-xts.patch
+          patch -Np1 -i ../patches/cachy/6.8/0001-aes-crypto.patch
           patch -Np1 -i ../patches/cachy/6.8/0002-amd-pstate.patch
-          patch -Np1 -i ../patches/cachy/6.8/0007-ksm.patch
-          patch -Np1 -i ../patches/cachy/6.8/0009-zstd.patch
+          patch -Np1 -i ../patches/cachy/6.8/0008-ksm.patch
+          patch -Np1 -i ../patches/cachy/6.8/0010-zstd.patch
           patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/tcp-brutal/0002-net-tcp_brutal-use-div_u64-to-let-it-build-on-32-bit.patch
           patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support.patch
@@ -86,6 +93,16 @@ jobs:
         run: |
           scripts/config --file ../config.${{ matrix.config }} \
                          --set-str LOCALVERSION "-egoist-${{ matrix.config }}"
+          # Clang FULL-LTO
+          scripts/config --file ../config.${{ matrix.config }} \
+                         -d LTO_NONE \
+                         -e LTO \
+                         -e LTO_CLANG \
+                         -e ARCH_SUPPORTS_LTO_CLANG \
+                         -e ARCH_SUPPORTS_LTO_CLANG_THIN \
+                         -e HAS_LTO_CLANG \
+                         -e LTO_CLANG_FULL \
+                         -e HAVE_GCC_PLUGINS
           # /proc/config.gz
           scripts/config --file ../config.${{ matrix.config }} \
                          -e IKCONFIG \
@@ -113,7 +130,7 @@ jobs:
                          --set-str DEFAULT_NET_SCH fq
           # TCP Brutal
           scripts/config --file ../config.${{ matrix.config }} \
-                         -m TCP_CONG_BRUTAL
+                         -e TCP_CONG_BRUTAL
           # zswap
           scripts/config --file ../config.${{ matrix.config }} \
                          -e ZPOOL \
@@ -167,11 +184,15 @@ jobs:
           make \
             KBUILD_OUTPUT=../${{ matrix.config }} \
             KCONFIG_CONFIG=../config.${{ matrix.config }} \
+            LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
+            LLVM_IAS=1 \
             olddefconfig
           make \
             KBUILD_OUTPUT=../${{ matrix.config }} \
             KCONFIG_CONFIG=../config.${{ matrix.config }} \
             KDEB_PKGVERSION=$(make kernelversion)-${{ env.PKGVER }} \
+            LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
+            LLVM_IAS=1 \
             -j`nproc` \
             bindeb-pkg
 
