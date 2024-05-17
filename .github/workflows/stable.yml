@@ -64,7 +64,7 @@ jobs:
             patch -Np1 -i ${i}
           done
           for i in $(grep '^Patch' ../patches/clearlinux/linux.spec |\
-            grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147' | sed -n 's/.*: //p'); do
+            grep -Ev '^Patch0132|^Patch0118|^Patch0113|^Patch0138|^Patch0139|^Patch0109|^Patch0147|^Patch0133' | sed -n 's/.*: //p'); do
               if [ "${i}" == "0162-extra-optmization-flags.patch" ] ; then
                 continue
               fi
