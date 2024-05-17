@@ -30,8 +30,10 @@ jobs:
                  gawk openssl libssl-dev dkms libudev-dev \
                  libpci-dev libiberty-dev autoconf \
                  debhelper lz4 \
-            && curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${{ env.LLVM_VER }}-x86_64.tar.gz \
-            && tar avxf llvm-${{ env.LLVM_VER }}-x86_64.tar.gz
+            && if [ ! -d ~/llvm-${{ env.LLVM_VER }}-x86_64 ]; then
+                 curl -O https://mirrors.edge.kernel.org/pub/tools/llvm/files/llvm-${{ env.LLVM_VER }}-x86_64.tar.gz \
+                 && tar avxf llvm-${{ env.LLVM_VER }}-x86_64.tar.gz -C ~/
+               fi
   checkout:
     name: Checkout main repo
     needs: apt
@@ -184,14 +186,14 @@ jobs:
           make \
             KBUILD_OUTPUT=../${{ matrix.config }} \
             KCONFIG_CONFIG=../config.${{ matrix.config }} \
-            LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
+            LLVM=~/llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
             LLVM_IAS=1 \
             olddefconfig
           make \
             KBUILD_OUTPUT=../${{ matrix.config }} \
             KCONFIG_CONFIG=../config.${{ matrix.config }} \
             KDEB_PKGVERSION=$(make kernelversion)-${{ env.PKGVER }} \
-            LLVM=$PWD/../llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
+            LLVM=~/llvm-${{ env.LLVM_VER }}-x86_64/bin/ \
             LLVM_IAS=1 \
             -j`nproc` \
             bindeb-pkg
