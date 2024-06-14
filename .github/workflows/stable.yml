@@ -13,9 +13,9 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.9.2
+  KERNEL_STABLE_VER: 6.9.4
   PKGVER: 1
-  LLVM_VER: 18.1.6
+  LLVM_VER: 18.1.7
 
 jobs:
   apt:
@@ -75,7 +75,7 @@ jobs:
           patch -Np1 -i ../patches/cachy/6.9/0001-aes-crypto.patch
           patch -Np1 -i ../patches/cachy/6.9/0002-amd-pstate.patch
           patch -Np1 -i ../patches/cachy/6.9/0008-ksm.patch
-          patch -Np1 -i ../patches/cachy/6.9/0010-zstd.patch
+          patch -Np1 -i ../patches/cachy/6.9/0011-zstd.patch
           patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/tcp-brutal/0002-net-tcp_brutal-use-div_u64-to-let-it-build-on-32-bit.patch
           patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support.patch
