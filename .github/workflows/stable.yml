@@ -13,7 +13,7 @@ on:
 
 env:
   HOME: /home/runner
-  KERNEL_STABLE_VER: 6.9.10
+  KERNEL_STABLE_VER: 6.10.1
   PKGVER: 1
   LLVM_VER: 18.1.8
 
@@ -60,9 +60,9 @@ jobs:
       - working-directory: linux-${{ env.KERNEL_STABLE_VER }}
         run: |
           patch -Np1 -i ../patches/kernel_compiler_patch/more-uarches-for-kernel-6.8-rc4+.patch
-          for i in ../patches/xanmod/linux-6.9.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
-            ../patches/xanmod/linux-6.9.y-xanmod/net/tcp/bbr3/*.patch \
-            ../patches/xanmod/linux-6.9.y-xanmod/net/tcp/cloudflare/*.patch; do 
+          for i in ../patches/xanmod/linux-6.10.y-xanmod/net/netfilter/*FLOWOFFLOAD*.patch \
+            ../patches/xanmod/linux-6.10.y-xanmod/net/tcp/bbr3/*.patch \
+            ../patches/xanmod/linux-6.10.y-xanmod/net/tcp/cloudflare/*.patch; do 
             patch -Np1 -i ${i}
           done
           for i in $(grep '^Patch' ../patches/clearlinux/linux.spec |\
@@ -72,10 +72,11 @@ jobs:
               fi
               patch -Np1 -i "../patches/clearlinux/${i}"
           done
-          patch -Np1 -i ../patches/cachy/6.9/0001-aes-crypto.patch
-          patch -Np1 -i ../patches/cachy/6.9/0002-amd-pstate.patch
-          patch -Np1 -i ../patches/cachy/6.9/0007-ksm.patch
-          patch -Np1 -i ../patches/cachy/6.9/0010-zstd.patch
+          patch -Np1 -i ../patches/cachy/6.10/0001-amd-pstate.patch
+          patch -Np1 -i ../patches/cachy/6.10/0005-crypto.patch
+          patch -Np1 -i ../patches/cachy/6.10/0007-ksm.patch
+          patch -Np1 -i ../patches/cachy/6.10/0009-perf-per-core.patch
+          patch -Np1 -i ../patches/cachy/6.10/0011-zstd.patch
           patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/tcp-brutal/0002-net-tcp_brutal-use-div_u64-to-let-it-build-on-32-bit.patch
           patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support.patch
