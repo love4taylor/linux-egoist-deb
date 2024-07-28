@@ -1,17 +1,18 @@
-From 99c24dd6eb2b39e883431874ccae6eaccc735cea Mon Sep 17 00:00:00 2001
+From 4c04d48064e064ffc5dbba0078564257389ceaaf Mon Sep 17 00:00:00 2001
 From: love4taylor <i@love4taylor.com>
-Date: Thu, 30 Nov 2023 22:51:13 +0900
-Subject: [PATCH 1/2] net-tcp_brutal: make it as a built-in kernel module
+Date: Sun, 28 Jul 2024 13:13:00 +0900
+Subject: [PATCH] net-tcp_brutal: make it as a built-in kernel module
 
+upstream: https://github.com/apernet/tcp-brutal
 ---
  net/ipv4/Kconfig      |   9 ++
  net/ipv4/Makefile     |   1 +
- net/ipv4/tcp_brutal.c | 311 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 321 insertions(+)
+ net/ipv4/tcp_brutal.c | 316 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 326 insertions(+)
  create mode 100644 net/ipv4/tcp_brutal.c
 
 diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index 8e94ed7c56a0..c58e7de8bfe3 100644
+index 8e94ed7c5..c58e7de8b 100644
 --- a/net/ipv4/Kconfig
 +++ b/net/ipv4/Kconfig
 @@ -678,6 +678,15 @@ config TCP_CONG_BBR
@@ -31,26 +32,27 @@ index 8e94ed7c56a0..c58e7de8bfe3 100644
  	prompt "Default TCP congestion control"
  	default DEFAULT_CUBIC
 diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index ec36d2ec059e..0647ec2ff635 100644
+index ec36d2ec0..3ecda04e1 100644
 --- a/net/ipv4/Makefile
 +++ b/net/ipv4/Makefile
-@@ -45,6 +45,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.o
- obj-$(CONFIG_INET_UDP_DIAG) += udp_diag.o
- obj-$(CONFIG_INET_RAW_DIAG) += raw_diag.o
- obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
-+obj-$(CONFIG_TCP_CONG_BRUTAL) += tcp_brutal.o
+@@ -48,6 +48,7 @@ obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
  obj-$(CONFIG_TCP_CONG_BIC) += tcp_bic.o
  obj-$(CONFIG_TCP_CONG_CDG) += tcp_cdg.o
  obj-$(CONFIG_TCP_CONG_CUBIC) += tcp_cubic.o
++obj-$(CONFIG_TCP_CONG_BRUTAL) += tcp_brutal.o
+ obj-$(CONFIG_TCP_CONG_DCTCP) += tcp_dctcp.o
+ obj-$(CONFIG_TCP_CONG_WESTWOOD) += tcp_westwood.o
+ obj-$(CONFIG_TCP_CONG_HSTCP) += tcp_highspeed.o
 diff --git a/net/ipv4/tcp_brutal.c b/net/ipv4/tcp_brutal.c
 new file mode 100644
-index 000000000000..98eebf1b6f2c
+index 000000000..070538551
 --- /dev/null
 +++ b/net/ipv4/tcp_brutal.c
-@@ -0,0 +1,311 @@
+@@ -0,0 +1,316 @@
 +#include <linux/module.h>
 +#include <linux/version.h>
 +#include <net/tcp.h>
++#include <linux/math64.h>
 +
 +#if IS_ENABLED(CONFIG_IPV6) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 +#include <net/transp_v6.h>
@@ -84,21 +86,21 @@ index 000000000000..98eebf1b6f2c
 +#define TCP_BRUTAL_PARAMS 23301
 +
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
-+u64 tcp_sock_get_sec(const struct tcp_sock *tp)
++static u64 tcp_sock_get_sec(const struct tcp_sock *tp)
 +{
-+    return tp->tcp_mstamp / USEC_PER_SEC;
++    return div_u64(tp->tcp_mstamp, USEC_PER_SEC);
 +}
 +#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
 +// see https://github.com/torvalds/linux/commit/9a568de4818dea9a05af141046bd3e589245ab83
-+u64 tcp_sock_get_sec(const struct tcp_sock *tp)
++static u64 tcp_sock_get_sec(const struct tcp_sock *tp)
 +{
-+    return tp->tcp_mstamp.stamp_us / USEC_PER_SEC;
++    return div_u64(tp->tcp_mstamp.stamp_us, USEC_PER_SEC);
 +}
 +#else
 +#include <linux/jiffies.h>
-+u64 tcp_sock_get_sec(const struct tcp_sock *tp)
++static u64 tcp_sock_get_sec(const struct tcp_sock *tp)
 +{
-+    return jiffies_to_usecs(tcp_time_stamp) / USEC_PER_SEC;
++    return div_u64(jiffies_to_usecs(tcp_time_stamp), USEC_PER_SEC);
 +}
 +#endif
 +
@@ -264,10 +266,10 @@ index 000000000000..98eebf1b6f2c
 +    }
 +
 +    rate *= 100;
-+    rate /= ack_rate;
++    rate = div_u64(rate, ack_rate);
 +
 +    // The order here is chosen carefully to avoid overflow as much as possible
-+    cwnd = rate / MSEC_PER_SEC;
++    cwnd = div_u64(rate, MSEC_PER_SEC);
 +    cwnd *= rtt_ms;
 +    cwnd /= mss;
 +    cwnd *= brutal->cwnd_gain;
@@ -279,7 +281,11 @@ index 000000000000..98eebf1b6f2c
 +    WRITE_ONCE(sk->sk_pacing_rate, min_t(u64, rate, READ_ONCE(sk->sk_max_pacing_rate)));
 +}
 +
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 10, 0)
++static void brutal_main(struct sock *sk, u32 ack, int flag, const struct rate_sample *rs)
++#else
 +static void brutal_main(struct sock *sk, const struct rate_sample *rs)
++#endif
 +{
 +    struct tcp_sock *tp = tcp_sk(sk);
 +    struct brutal *brutal = inet_csk_ca(sk);
@@ -292,7 +298,7 @@ index 000000000000..98eebf1b6f2c
 +        return;
 +
 +    sec = tcp_sock_get_sec(tp);
-+    slot = sec % PKT_INFO_SLOTS;
++    div_u64_rem(sec, PKT_INFO_SLOTS, &slot);
 +
 +    if (brutal->slots[slot].sec == sec)
 +    {
@@ -358,7 +364,7 @@ index 000000000000..98eebf1b6f2c
 +MODULE_AUTHOR("Aperture Internet Laboratory");
 +MODULE_LICENSE("GPL");
 +MODULE_DESCRIPTION("TCP Brutal");
-+MODULE_VERSION("1.0.1");
++MODULE_VERSION("1.0.2");
 -- 
-2.39.2
+2.45.2
 
