@@ -15,7 +15,7 @@ env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.10.2
   PKGVER: 1
-  LLVM_VER: 19.1.0-rc1
+  LLVM_VER: 18.1.8
 
 jobs:
   apt:
