@@ -74,9 +74,10 @@ jobs:
           done
           patch -Np1 -i ../patches/cachy/6.10/0001-amd-pstate.patch
           patch -Np1 -i ../patches/cachy/6.10/0005-crypto.patch
-          patch -Np1 -i ../patches/cachy/6.10/0007-ksm.patch
-          patch -Np1 -i ../patches/cachy/6.10/0009-perf-per-core.patch
-          patch -Np1 -i ../patches/cachy/6.10/0011-zstd.patch
+          patch -Np1 -i ../patches/cachy/6.10/0007-intel-pstate.patch
+          patch -Np1 -i ../patches/cachy/6.10/0008-ksm.patch
+          patch -Np1 -i ../patches/cachy/6.10/0010-perf-per-core.patch
+          patch -Np1 -i ../patches/cachy/6.10/0012-zstd.patch
           patch -Np1 -i ../patches/tcp-brutal/0001-net-tcp_brutal-make-it-as-a-built-in-kernel-module.patch
           patch -Np1 -i ../patches/bcm-fullcone/0001-netfilter-nat-add-brcm-fullcone-support.patch
           patch -Np1 -i ../patches/bcm-fullcone/0002-netfilter-nat-add-brcm-fullcone-nft-support.patch
