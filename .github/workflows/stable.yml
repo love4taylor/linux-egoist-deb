@@ -74,7 +74,6 @@ jobs:
           done
           patch -Np1 -i ../patches/cachy/6.10/0001-amd-pstate.patch
           patch -Np1 -i ../patches/cachy/6.10/0005-crypto.patch
-          patch -Np1 -i ../patches/cachy/6.10/0007-intel-pstate.patch
           patch -Np1 -i ../patches/cachy/6.10/0008-ksm.patch
           patch -Np1 -i ../patches/cachy/6.10/0010-perf-per-core.patch
           patch -Np1 -i ../patches/cachy/6.10/0012-zstd.patch
