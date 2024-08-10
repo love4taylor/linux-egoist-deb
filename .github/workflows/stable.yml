@@ -14,7 +14,7 @@ on:
 env:
   HOME: /home/runner
   KERNEL_STABLE_VER: 6.10.3
-  PKGVER: 2
+  PKGVER: 3
   LLVM_VER: 18.1.8
 
 jobs:
